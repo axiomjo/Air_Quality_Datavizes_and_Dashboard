@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+setuptools = "*"
+wheel = "*" 
 streamlit = "*"
 jupyter = "*"
 matplotlib = "*"
@@ -11,6 +13,7 @@ numpy = "*"
 pandas = "*"
 scipy = "*"
 seaborn = "*"
+
 
 [dev-packages]
 
