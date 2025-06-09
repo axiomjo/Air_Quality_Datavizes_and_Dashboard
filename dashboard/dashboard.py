@@ -11,22 +11,23 @@ import seaborn as sb
 import numpy as np
 import pandas as pd
 
-# Set the title and favicon that appear in the Browser's tab bar.
+# kustomisasi nama tab di browser
 st.set_page_config(
-    page_title='2013-2017 Beijing PRSA stations: city & pollutant overview',
-    page_icon=':toolbox:', # This is an emoji shortcode. Could be a URL too.
+    page_title='2013-2017 Beijing PRSA stations according to WHO Air Quality Guidelines',
+    page_icon=':toolbox:', 
 )
 
 # Set the title that appears at the top of the page.
 '''
 # :toolbox: BEIJING'S POLLUTANT IN DATA (2013-2017)
+## <==== klo mau sembunyiin polutan yg gapenting, setting di dashboard kiri y. 
 
-Look around and play with the dataviz-es of Beijing Municipal Environmental Monitoring Center 's air quality data! 
+
 '''
 
 '''
 **DATA SOURCE**:  
-The data is from aaaaa
+The data is from
 https://www.kaggle.com/datasets/sid321axn/beijing-multisite-airquality-data-set,
 and i discovered it from Dicoding's "Belajar Analisis Data dengan Python" course :>
 
@@ -36,7 +37,22 @@ and i discovered it from Dicoding's "Belajar Analisis Data dengan Python" course
 ''
 ''
 
-#========================== perkara NGIMPOR DATA BUAT DATAVIZ ==========================
+st.markdown(
+    """
+    cara artiin heatmap & stacked bar chart:
+    | warna  | kriteria  |
+    |-----------|-----------|
+    |<span style="background-color: #A6D75B; color: #000;">A6D75B</span> |  **0**< x < AQG Level      |
+    | <span style="background-color: #E07A5F; color: #000;">E07A5F</span>    | **AQG Level** < x < Interim Target 4       |
+    | <span style="background-color: #D07666; color: #000;">D07666</span>  | **Interim Target 4** < x <Interim Target 3    |
+    | <span style="background-color: #B85042; color: #000;">B85042</span>   | **Interim Target 3** < x <Interim Target 2    |
+    | <span style="background-color: #7A3E2F; color: #000;">7A3E2F</span>  | **Interim Target 2** < x <Interim Target 1   |
+    | <span style="background-color: #332D2D; color: #000;">332D2D</span>  | **Interim Target 1** < x   |
+    """
+, unsafe_allow_html=True
+)
+
+#========================== perkara NGIMPOR DATA JILID 1 BUAT DATAVIZ ==========================
 
 
 @st.cache_data
@@ -44,8 +60,6 @@ def load_data():
     df = pd.read_csv('dashboard/cleaned_data_semua_area.csv')
     return df
 
-
-# Load data (cached)
 cleaned_data_semua_area = load_data()
 
 
@@ -79,58 +93,116 @@ bin_labels = [
     "6: di atas IT1"
 ]
 
-#========================== perkara bikin dataframe buat grafik ==========================
+st.write("pilih mau liat polutan mana :D")
+#========================== perkara NGIMPOR DATA JILID 2 BUAT grafik  ==========================
+
+#====== ini buat stacked bar chart yg di dalem tab
+@st.cache_data
+def baca_csv_stackedbarchart_yang(pollutant_name):
+   
+    file_path = Path(f'dashboard/summary_stackedbarchart_{pollutant_name}.csv')
+    if file_path.exists():
+        df = pd.read_csv(file_path)
+        return df
+    else:
+        st.error(f"Data for {pollutant_name} gaada woy :c.")
+        return pd.DataFrame()
+
+semuaan_stackedbarchart = {}
+for tiap_polutan in key_polutan_data:
+    semuaan_stackedbarchart[tiap_polutan] = baca_csv_stackedbarchart_yang(tiap_polutan)
 
 
 
+@st.cache_data
+def baca_who():
+    df = pd.read_csv('dashboard/standar_who.csv')
+    return df
+
+standar_who_ok = baca_who()
 
 
-#============================== perkara tabs per polutan ==========================
-tabs = st.tabs(key_polutan_data)
+#========================== perkara bikin helper function2 yg bisa di-call buat bikin grafik ==========================
 
-for tab, tiap_polutan in zip(tabs, key_polutan_data):
-    with tab:
-        st.subheader(f"bla{tiap_polutan}")
-        
+#-----------------------------------------
+#--- stacked bar chart di dalem tab
+def stacked_bar_chart_urut( polutannya, datanya, standar_binnya, label_binnya, palet_warnanya):
+    
+    
+    temp_pivoted_data = datanya.set_index("station")
+    ax = temp_pivoted_data.plot(
+        kind='bar',
+        stacked=True,
+        figsize=(10, 7),
+        color=palet_warnanya,
+        title= tiap_polutan
+    )
+
+    ax.legend(
+        title='TIngkat Keparahan', 
+        loc='center left', 
+        bbox_to_anchor=(1, 0.5)
+    )
+    
+    mpl.ylabel("Count of Days")
+    mpl.xticks(rotation=45, ha='right')
+    mpl.tight_layout()
+    
+    fig = ax.get_figure()
+
+    return fig, ax 
 
 
-#----------------------------
-'''
-NTAR BALIKIN Y JO.
-'''
-# Display Color Palette as Markdown
-# tab2.subheader("🎨 Pollutant Colors")
-# for pollutant, color in pollutant_color_map.items():
-#     tab2.markdown(f"<span style='background-color:{color}; padding:5px 10px; border-radius:5px; color:white'>{pollutant}</span>", unsafe_allow_html=True)
+#-----------------------------------------
+#--- heatmap di dalem tab
+def heatmap_station_polutan(axnya, datanya, individunya, kategorinya, colormapnya, normalisasinya, show_cbar=False):
+    pivot = datanya.pivot_table(index="year", columns="datestamp", values=kategorinya)
+    mask = pivot.isna() 
+    
+
+    sb.heatmap(
+        pivot, ax=axnya, cmap=colormapnya, linewidths=0, linecolor=None, norm=normalisasinya, mask=mask, cbar=show_cbar, cbar_kws={'label': pollutant} if show_cbar else None
+    )
+
+    axnya.set_title(f"{individunya}", fontsize=10)
+    axnya.set_xlabel("")
+    axnya.set_ylabel("")
+
+    axnya.set_xticks(np.linspace(15, 365, 12))  # Approx. middle of each month
+    axnya.set_xticklabels(
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        rotation=45,
+        ha='right',
+        fontsize=8
+    )
+    axnya.tick_params(axis='y', labelsize=8)
 
 
-# tab2.subheader("🎨 Station Colors")
-# for station, color in station_color_map.items():
-#     tab2.markdown(f"<span style='background-color:{color}; padding:5px 10px; border-radius:5px; color:white'>{station}</span>", unsafe_allow_html=True)
+#-----------------------------------------
+#--- scatterplot timeline di paling atas tab
+def scatterplot_timeline(axnya, datanya, yg_digambarnya, colormapnya):
+    sb.scatterplot(
+        data=datanya, 
+        x="daystamp", 
+        y=yg_digambarnya, 
+        hue="station", 
+        alpha=0.6, 
+        palette=colormapnya, 
+        ax=axnya
+    )
+    axnya.set_title(f"Konsentrasi {yg_digambarnya}")
+    axnya.set_ylabel(yg_digambarnya)
+    axnya.legend(loc="upper right", fontsize=8)
 
-#----------------------------
+
 
 #========================== perkara settings sidebar==========================
 st.sidebar.title("🔧 Dashboard Settings")
 
-st.sidebar.markdown(
-    """
-    This is a simple dashboard to visualize GDP data from 1960 to 2022.
-    You can select the year and country you want to see.
-    
-| kriteria  | warna  |
-|-----------|-----------|
-|  **0**< x < AQG Level      |<span style="background-color: #A6D75B; color: #000;">A6D75B</span> |
-| **AQG Level** < x < Interim Target 4       | <span style="background-color: #E07A5F; color: #000;">E07A5F</span>    |
-| **Interim Target 4** < x <Interim Target 3    | <span style="background-color: #D07666; color: #000;">D07666</span>  |
-| **Interim Target 3** < x <Interim Target 2    | <span style="background-color: #B85042; color: #000;">B85042</span>   |
-| **Interim Target 2** < x <Interim Target 1   | <span style="background-color: #7A3E2F; color: #000;">7A3E2F</span>  |
-| **Interim Target 1** < x   | <span style="background-color: #332D2D; color: #000;">332D2D</span>  |
-    
-    """
-)
 
-#======== checkbox polutan
+
+#----------- checkbox polutan
 st.sidebar.subheader("POLLUTANTS")
 
 polutan_checkbox_states = {}
@@ -153,5 +225,44 @@ for tiap_polutan in key_polutan_data:
 selected_polutant = [pollutant for pollutant, checked in polutan_checkbox_states.items() if checked]
 st.sidebar.write(f"polutan yg kepilih: {', '.join(selected_polutant)}")
 
+''
+''
+
+#----------- checkbox polutan
 
 
+#============================== perkara tabs per polutan ==========================
+# Add some spacing
+''
+''
+
+tabs = st.tabs(selected_polutant)
+
+for tab, tiap_polutan in zip(tabs, selected_polutant):
+    with tab:
+        st.subheader(f"dataviz jumlah hari taat AQG untuk {tiap_polutan}")
+
+        temp_polutannya = semuaan_stackedbarchart[tiap_polutan]
+        temp_fignya, temp_axnya = stacked_bar_chart_urut(
+            polutannya=tiap_polutan,
+            datanya=temp_polutannya,
+            standar_binnya=standar_who_ok,
+            label_binnya=bin_labels,
+            palet_warnanya=palet_jojo
+        )
+        st.pyplot(temp_fignya)
+        st.dataframe(temp_polutannya.head())
+
+        heatmaps_ditampilin = f"mo_pamer_dataviz/4_heatmap_tiap_statiun_yg_polutannya_{tiap_polutan}.png"
+        st.image(heatmaps_ditampilin)
+
+        
+     
+    
+
+
+    
+    
+
+
+ 
