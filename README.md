@@ -2,9 +2,7 @@
 
 ### 
 
-![](/home/axiomjo/Pictures/screenshot_title_dashboard.png)
-
-![](/home/axiomjo/submission1_airquality_dataviz_dashboard/Air_Quality_Datavizes_and_Dashboard/mo_pamer_dataviz/screenshot_dashboard_1.png)
+![](mo_pamer_dataviz/screenshot_title_dashboard.png)
 
 ### 📨========= hello, an intro from jojo:  =================
 
@@ -130,7 +128,7 @@ YEY JUPYTER NOTEBOOK JALAN, bisa klik file notebook `air_quality_analysis_jojo.i
 
 harusnya sih di browser, walopun gaada internet, bisa jalan. kyk gini.  🌸 
 
-![](/home/axiomjo/submission1_airquality_dataviz_dashboard/Air_Quality_Datavizes_and_Dashboard/mo_pamer_dataviz/screenshot_dashboard_dan_para_terminal.png)
+![](mo_pamer_dataviz/screenshot_dashboard_dan_para_terminal.png)
 
 --- 
 
