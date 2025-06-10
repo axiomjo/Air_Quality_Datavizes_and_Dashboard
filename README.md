@@ -4,23 +4,23 @@
 
 ![](mo_pamer_dataviz/screenshot_title_dashboard.png)
 
-### 📨========= hello, an intro from jojo:  =================
-
-ini aslinya proyek **Belajar Analisis Data dengan Python** - dicoding.
-
-repo ini sizenya gede ( >50Mb) coz banyak gambar awokoakwoakwokoa.   
-
-didalem repo ini kamu bisa liat eksplorasiku mainan sama dataviz buat dataset Air Quality. WKWKWKKW. tiga hal ini aja karya yg mau kuhighlight:
-
-
-
-🌸 file `air_quality_analysis_jojo.ipynb` = notebook proses analisis dataku. enak diliat di vscode, atau liat di github web
-
-🌸folder `mo_pamer_dataviz` = folder isinya gambar2 .png dataviz pake `matplotlib` sama `seaborn` . aslinya ya ada di notebook. enak diliat klo didownload.
-
-🌸file `dashboard.py` di folder `dashboard` = script python pake library streamlit buat bikin dashboardnya. enak diliat lewat link webnya.
-
-### 📨===== sekian intronya. skrg, cara jalaninnya ==========
+>### 📨========= hello, an intro from jojo:  =================
+> 
+>ini aslinya proyek **Belajar Analisis Data dengan Python** - dicoding.
+> 
+>repo ini sizenya gede ( >50Mb) coz banyak gambar awokoakwoakwokoa.   
+> 
+> didalem repo ini kamu bisa liat eksplorasiku mainan sama dataviz buat dataset Air Quality. WKWKWKKW. tiga hal ini aja karya yg mau kuhighlight:
+> 
+> 
+> 
+> 🌸 file `air_quality_analysis_jojo.ipynb` = notebook proses analisis dataku. enak diliat di vscode, atau liat di github web
+> 
+> 🌸folder `mo_pamer_dataviz` = folder isinya gambar2 .png dataviz pake `matplotlib` sama `seaborn` . aslinya ya ada di notebook. enak diliat klo didownload.
+> 
+> 🌸file `dashboard.py` di folder `dashboard` = script python pake library streamlit buat bikin dashboardnya. enak diliat lewat link webnya.
+> 
+> ### 📨===== sekian intronya. skrg, cara jalaninnya ==========
 
 
 
@@ -34,7 +34,7 @@ didalem repo ini kamu bisa liat eksplorasiku mainan sama dataviz buat dataset Ai
 
 🌸 klo mau liat dashboard tanpa download apa2, klik:
 
-[](https://seberapataataqg.streamlit.app/)
+[https://seberapataataqg.streamlit.app/](https://seberapataataqg.streamlit.app/)
 
 
 
